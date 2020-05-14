@@ -1,0 +1,70 @@
+import sys
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+
+class Form(QDialog):
+	def __init__(self, parent = None):
+		super(Form, self).__init__(parent)
+
+		#Create the widgets
+		self.principal = QDoubleSpinBox()
+		self.rate = QDoubleSpinBox()
+		self.year = QComboBox()
+		self.amount = QLabel("Nothing yet")
+
+		#Configure the widgets
+		self.principal.setPrefix("$ ")
+		self.principal.setRange(0.00, 1000.00)
+		self.principal.setValue(100.00) #Default value
+
+		self.rate.setSuffix(" %")
+		self.rate.setRange(0.00, 10.00)
+		self.rate.setValue(5.00) #Default value
+
+		self.year_list = ["1 year", "2 years", "3 years"]
+		self.year.addItems(self.year_list)
+
+		#Create the labels
+		self.label_1 = QLabel("Principal: ")
+		self.label_2 = QLabel("Rate: ")
+		self.label_3 = QLabel("Years: ")
+		self.label_4 = QLabel("Amount: ")
+
+		grid = QGridLayout()
+		grid.addWidget(self.label_1, 1, 0)
+		grid.addWidget(self.label_2, 2, 0)
+		grid.addWidget(self.label_3, 3, 0)
+		grid.addWidget(self.label_4, 4, 0)
+
+		grid.addWidget(self.principal, 1, 1)
+		grid.addWidget(self.rate, 2, 1)
+		grid.addWidget(self.year, 3, 1)
+		grid.addWidget(self.amount, 4, 1)
+		self.setLayout(grid)
+
+		self.principal.valueChanged.connect(self.updateUi)
+		self.rate.valueChanged.connect(self.updateUi)
+		self.year.currentIndexChanged.connect(self.updateUi)
+
+		self.setWindowTitle("Currency")
+
+	def updateUi(self):
+		pr = float(self.principal.value())
+		rt = float(self.rate.value())
+		yr_name = str(self.year.currentText())
+		yr_index = self.year_list.index(yr_name)
+		yr_index += 1
+
+		total = 0
+
+		for i in range(yr_index):
+			total = (pr*(rt/100)) + pr
+			pr = total
+		
+		self.amount.setText("$ %0.2f" % total)
+
+app = QApplication(sys.argv)
+form = Form()
+form.show()
+app.exec_()
