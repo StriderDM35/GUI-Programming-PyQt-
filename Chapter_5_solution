@@ -1,0 +1,97 @@
+import sys
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+
+class editFruit(QDialog):
+	def __init__(self, fruits, parent = None):
+		super(editFruit, self).__init__(parent)
+
+		#Create the list view
+		self.fruitlist = QListWidget()
+		self.fruitlist.addItems(fruits)
+		self.fruitlist.setCurrentRow(0)
+
+		#Create the buttons
+		self.add = QPushButton("&Add")
+		self.edit = QPushButton("&Edit")
+		self.remove = QPushButton("&Remove")
+		self.up = QPushButton("&Up")
+		self.down = QPushButton("&Down")
+		self.sort = QPushButton("&Sort")
+		self.cancel = QDialogButtonBox(QDialogButtonBox.Close)
+
+		#Button connections
+		self.add.clicked.connect(self.add_fruit)
+		self.edit.clicked.connect(self.edit_fruit)
+		self.remove.clicked.connect(self.remove_fruit)
+		self.up.clicked.connect(self.up_fruit)
+		self.down.clicked.connect(self.down_fruit)
+		self.sort.clicked.connect(self.sort_fruit)
+		self.cancel.rejected.connect(self.reject)
+
+		#Grid layout
+		grid = QGridLayout()
+		grid.addWidget(self.fruitlist, 0, 0, 7, 2)
+		grid.addWidget(self.add, 0, 2)
+		grid.addWidget(self.edit, 1, 2)
+		grid.addWidget(self.remove, 2, 2)
+		grid.addWidget(self.up, 3, 2)
+		grid.addWidget(self.down, 4, 2)
+		grid.addWidget(self.sort, 5, 2)
+		grid.addWidget(self.cancel, 6, 2)
+		self.setLayout(grid)
+
+		self.setWindowTitle("Edit Fruit List")
+
+	def add_fruit(self):
+		row = self.fruitlist.currentRow()
+		title = "Add new fruit"
+		new_fruit, ok = QInputDialog.getText(self, title, "Enter new fruit's name")
+		if new_fruit and ok:
+			self.fruitlist.insertItem(row, new_fruit)
+
+	def edit_fruit(self):
+		row = self.fruitlist.currentRow()
+		item = self.fruitlist.item(row)		
+		title = "Edit fruit's name"
+		if item is not None:
+			new_name, ok = QInputDialog.getText(self, title, "Enter a new name for the fruit")
+			if new_name and ok:
+				item.setText(new_name)
+
+	def remove_fruit(self):
+		row = self.fruitlist.currentRow()
+		item = self.fruitlist.item(row)
+		title = "Remove fruit"
+		reply = QMessageBox.question(self, title, "Remove %s?" % item.text(), QMessageBox.Yes|QMessageBox.No)
+		if reply == QMessageBox.Yes:
+			item = self.fruitlist.takeItem(row)
+			del item
+
+	def up_fruit(self):
+		row = self.fruitlist.currentRow()
+		item = self.fruitlist.takeItem(row)
+		new_row = row - 1
+		self.fruitlist.insertItem(new_row, item)
+		self.fruitlist.setCurrentRow(new_row)
+
+	def down_fruit(self):
+		row = self.fruitlist.currentRow()
+		item = self.fruitlist.takeItem(row)
+		new_row = row + 1
+		self.fruitlist.insertItem(new_row, item)
+		self.fruitlist.setCurrentRow(new_row)
+
+	def sort_fruit(self):
+		self.fruitlist.sortItems()	
+
+	def update_Ui(self):
+		text = str(self.fruit_name.text())
+		self.fruitlist.addItem(text)
+
+app = QApplication(sys.argv)
+fruits = ["Banana", "Apple", "Grape", "Orange"]
+form = editFruit(fruits)
+form.show()
+app.exec_()
