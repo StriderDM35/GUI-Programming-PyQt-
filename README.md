@@ -1,2 +1,3 @@
-# GUI-Programming-PyQt-
-This is my solution to the chapter 5 exercise.
+# GUI-Programming (PyQt)
+This contains my solutions to the exercises found in the book "Rapid GUI Programming with Python and Qt" by Mark Summerfield. 
+Additionally, all my solutions are done with PyQt5 and Python 3.6.
